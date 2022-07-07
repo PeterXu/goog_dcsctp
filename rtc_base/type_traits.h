@@ -137,4 +137,28 @@ static_assert(!IsIntlike<S>::value, "");
 
 }  // namespace rtc
 
+
+//
+// c++11 compatiable
+//
+
+#if (__cplusplus < 201703L)
+namespace std {
+template <class Iter>
+constexpr std::reverse_iterator<Iter> make_reverse_iterator(Iter i)
+{
+  return std::reverse_iterator<Iter>(i);
+}
+}
+#endif
+
+#if !defined(CONSTEXPR)
+  #if (__cplusplus >= 201402)
+    #define CONSTEXPR constexpr
+  #else
+    #define CONSTEXPR
+  #endif
+#endif
+
+
 #endif  // RTC_BASE_TYPE_TRAITS_H_
