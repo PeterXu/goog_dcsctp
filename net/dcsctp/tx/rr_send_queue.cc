@@ -74,14 +74,16 @@ bool RRSendQueue::IsConsistent() const {
       scheduler_.ActiveStreamsForTesting();
 
   size_t total_buffered_amount = 0;
-  for (const auto& [stream_id, stream] : streams_) {
+  for (const auto& iter : streams_) {
+    auto& stream_id = iter.first;
+    auto& stream = iter.second;
     total_buffered_amount += stream.buffered_amount().value();
     if (stream.bytes_to_send_in_next_message() > 0) {
       expected_active_streams.emplace(stream_id);
     }
   }
   if (expected_active_streams != actual_active_streams) {
-    auto fn = [&](rtc::StringBuilder& sb, const auto& p) { sb << *p; };
+    auto fn = [&](rtc::StringBuilder& sb, const std::set<StreamID>::value_type& p) { sb << *p; };
     RTC_DLOG(LS_ERROR) << "Active streams mismatch, is=["
                        << StrJoin(actual_active_streams, ",", fn)
                        << "], expected=["
@@ -402,7 +404,8 @@ void RRSendQueue::PrepareResetStream(StreamID stream_id) {
 }
 
 bool RRSendQueue::HasStreamsReadyToBeReset() const {
-  for (auto& [unused, stream] : streams_) {
+  for (auto& iter : streams_) {
+    auto& stream = iter.second;
     if (stream.IsReadyToBeReset()) {
       return true;
     }
@@ -410,11 +413,13 @@ bool RRSendQueue::HasStreamsReadyToBeReset() const {
   return false;
 }
 std::vector<StreamID> RRSendQueue::GetStreamsReadyToBeReset() {
-  RTC_DCHECK(absl::c_count_if(streams_, [](const auto& p) {
+  RTC_DCHECK(absl::c_count_if(streams_, [](const std::map<StreamID, OutgoingStream>::value_type& p) {
                return p.second.IsResetting();
              }) == 0);
   std::vector<StreamID> ready;
-  for (auto& [stream_id, stream] : streams_) {
+  for (auto& iter : streams_) {
+    auto& stream_id = iter.first;
+    auto& stream = iter.second;
     if (stream.IsReadyToBeReset()) {
       stream.SetAsResetting();
       ready.push_back(stream_id);
@@ -424,10 +429,11 @@ std::vector<StreamID> RRSendQueue::GetStreamsReadyToBeReset() {
 }
 
 void RRSendQueue::CommitResetStreams() {
-  RTC_DCHECK(absl::c_count_if(streams_, [](const auto& p) {
+  RTC_DCHECK(absl::c_count_if(streams_, [](const std::map<StreamID, OutgoingStream>::value_type& p) {
                return p.second.IsResetting();
              }) > 0);
-  for (auto& [unused, stream] : streams_) {
+  for (auto& iter : streams_) {
+    auto& stream = iter.second;
     if (stream.IsResetting()) {
       stream.Reset();
     }
@@ -436,10 +442,11 @@ void RRSendQueue::CommitResetStreams() {
 }
 
 void RRSendQueue::RollbackResetStreams() {
-  RTC_DCHECK(absl::c_count_if(streams_, [](const auto& p) {
+  RTC_DCHECK(absl::c_count_if(streams_, [](const std::map<StreamID, OutgoingStream>::value_type& p) {
                return p.second.IsResetting();
              }) > 0);
-  for (auto& [unused, stream] : streams_) {
+  for (auto& iter : streams_) {
+    auto& stream = iter.second;
     if (stream.IsResetting()) {
       stream.Resume();
     }
@@ -450,7 +457,8 @@ void RRSendQueue::RollbackResetStreams() {
 void RRSendQueue::Reset() {
   // Recalculate buffered amount, as partially sent messages may have been put
   // fully back in the queue.
-  for (auto& [unused, stream] : streams_) {
+  for (auto& iter : streams_) {
+    auto& stream = iter.second;
     stream.Reset();
   }
   scheduler_.ForceReschedule();
@@ -519,7 +527,9 @@ HandoverReadinessStatus RRSendQueue::GetHandoverReadiness() const {
 }
 
 void RRSendQueue::AddHandoverState(DcSctpSocketHandoverState& state) {
-  for (const auto& [stream_id, stream] : streams_) {
+  for (const auto& iter : streams_) {
+    auto& stream_id = iter.first;
+    auto& stream = iter.second;
     DcSctpSocketHandoverState::OutgoingStream state_stream;
     state_stream.id = stream_id.value();
     stream.AddHandoverState(state_stream);

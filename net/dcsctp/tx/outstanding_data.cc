@@ -79,7 +79,9 @@ bool OutstandingData::IsConsistent() const {
                                       to_be_fast_retransmitted_.end());
 
   std::set<UnwrappedTSN> actual_combined_to_be_retransmitted;
-  for (const auto& [tsn, item] : outstanding_data_) {
+  for (const auto& iter : outstanding_data_) {
+    auto& tsn = iter.first;
+    auto& item = iter.second;
     if (item.is_outstanding()) {
       actual_outstanding_bytes += GetSerializedChunkSize(item.data());
       ++actual_outstanding_items;
@@ -277,7 +279,9 @@ void OutstandingData::AbandonAllFor(const Item& item) {
                          << *tsn.Wrap();
   }
 
-  for (auto& [tsn, other] : outstanding_data_) {
+  for (auto& iter : outstanding_data_) {
+    auto& tsn = iter.first;
+    auto& other = iter.second;
     if (!other.is_abandoned() &&
         other.data().stream_id == item.data().stream_id &&
         other.data().is_unordered == item.data().is_unordered &&
@@ -356,7 +360,9 @@ std::vector<std::pair<TSN, Data>> OutstandingData::GetChunksToBeRetransmitted(
 }
 
 void OutstandingData::ExpireOutstandingChunks(TimeMs now) {
-  for (const auto& [tsn, item] : outstanding_data_) {
+  for (const auto& iter : outstanding_data_) {
+    auto& tsn = iter.first;
+    auto& item = iter.second;
     // Chunks that are nacked can be expired. Care should be taken not to expire
     // unacked (in-flight) chunks as they might have been received, but the SACK
     // is either delayed or in-flight and may be received later.
@@ -414,7 +420,9 @@ absl::optional<UnwrappedTSN> OutstandingData::Insert(
 }
 
 void OutstandingData::NackAll() {
-  for (auto& [tsn, item] : outstanding_data_) {
+  for (auto& iter : outstanding_data_) {
+    auto& tsn = iter.first;
+    auto& item = iter.second;
     if (!item.is_acked()) {
       NackItem(tsn, item, /*retransmit_now=*/true,
                /*do_fast_retransmit=*/false);
@@ -441,7 +449,9 @@ std::vector<std::pair<TSN, OutstandingData::State>>
 OutstandingData::GetChunkStatesForTesting() const {
   std::vector<std::pair<TSN, State>> states;
   states.emplace_back(last_cumulative_tsn_ack_.Wrap(), State::kAcked);
-  for (const auto& [tsn, item] : outstanding_data_) {
+  for (const auto& iter : outstanding_data_) {
+    auto& tsn = iter.first;
+    auto& item = iter.second;
     State state;
     if (item.is_abandoned()) {
       state = State::kAbandoned;
@@ -473,7 +483,9 @@ ForwardTsnChunk OutstandingData::CreateForwardTsn() const {
   std::map<StreamID, SSN> skipped_per_ordered_stream;
   UnwrappedTSN new_cumulative_ack = last_cumulative_tsn_ack_;
 
-  for (const auto& [tsn, item] : outstanding_data_) {
+  for (const auto& iter : outstanding_data_) {
+    auto& tsn = iter.first;
+    auto& item = iter.second;
     if ((tsn != new_cumulative_ack.next_value()) || !item.is_abandoned()) {
       break;
     }
@@ -486,7 +498,9 @@ ForwardTsnChunk OutstandingData::CreateForwardTsn() const {
 
   std::vector<ForwardTsnChunk::SkippedStream> skipped_streams;
   skipped_streams.reserve(skipped_per_ordered_stream.size());
-  for (const auto& [stream_id, ssn] : skipped_per_ordered_stream) {
+  for (const auto& iter : skipped_per_ordered_stream) {
+    auto& stream_id = iter.first;
+    auto& ssn = iter.second;
     skipped_streams.emplace_back(stream_id, ssn);
   }
   return ForwardTsnChunk(new_cumulative_ack.Wrap(), std::move(skipped_streams));
@@ -496,7 +510,9 @@ IForwardTsnChunk OutstandingData::CreateIForwardTsn() const {
   std::map<std::pair<IsUnordered, StreamID>, MID> skipped_per_stream;
   UnwrappedTSN new_cumulative_ack = last_cumulative_tsn_ack_;
 
-  for (const auto& [tsn, item] : outstanding_data_) {
+  for (const auto& iter : outstanding_data_) {
+    auto& tsn = iter.first;
+    auto& item = iter.second;
     if ((tsn != new_cumulative_ack.next_value()) || !item.is_abandoned()) {
       break;
     }
@@ -511,7 +527,9 @@ IForwardTsnChunk OutstandingData::CreateIForwardTsn() const {
 
   std::vector<IForwardTsnChunk::SkippedStream> skipped_streams;
   skipped_streams.reserve(skipped_per_stream.size());
-  for (const auto& [stream, message_id] : skipped_per_stream) {
+  for (const auto& iter : skipped_per_stream) {
+    auto& stream = iter.first;
+    auto& message_id = iter.second;
     skipped_streams.emplace_back(stream.first, stream.second, message_id);
   }
 

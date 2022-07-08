@@ -64,15 +64,15 @@ class StreamScheduler {
  private:
   class VirtualTime : public webrtc::StrongAlias<class VirtualTimeTag, double> {
    public:
-    constexpr explicit VirtualTime(const UnderlyingType& v)
+    CONSTEXPR explicit VirtualTime(const UnderlyingType& v)
         : webrtc::StrongAlias<class VirtualTimeTag, double>(v) {}
 
-    static constexpr VirtualTime Zero() { return VirtualTime(0); }
+    static CONSTEXPR VirtualTime Zero() { return VirtualTime(0); }
   };
   class InverseWeight
       : public webrtc::StrongAlias<class InverseWeightTag, double> {
    public:
-    constexpr explicit InverseWeight(StreamPriority priority)
+    CONSTEXPR explicit InverseWeight(StreamPriority priority)
         : webrtc::StrongAlias<class InverseWeightTag, double>(
               1.0 / std::max(static_cast<double>(*priority), 0.000001)) {}
   };

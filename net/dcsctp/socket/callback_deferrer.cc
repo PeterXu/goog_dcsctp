@@ -81,24 +81,26 @@ uint32_t CallbackDeferrer::GetRandomInt(uint32_t low, uint32_t high) {
 
 void CallbackDeferrer::OnMessageReceived(DcSctpMessage message) {
   RTC_DCHECK(prepared_);
+  auto deliverer = MessageDeliverer(std::move(message));
   deferred_.emplace_back(
-      [deliverer = MessageDeliverer(std::move(message))](
-          DcSctpSocketCallbacks& cb) mutable { deliverer.Deliver(cb); });
+      [deliverer](DcSctpSocketCallbacks& cb) mutable { deliverer.Deliver(cb); });
 }
 
 void CallbackDeferrer::OnError(ErrorKind error, absl::string_view message) {
   RTC_DCHECK(prepared_);
+  auto message2 = std::string(message);
   deferred_.emplace_back(
-      [error, message = std::string(message)](DcSctpSocketCallbacks& cb) {
-        cb.OnError(error, message);
+      [error, message2](DcSctpSocketCallbacks& cb) {
+        cb.OnError(error, message2);
       });
 }
 
 void CallbackDeferrer::OnAborted(ErrorKind error, absl::string_view message) {
   RTC_DCHECK(prepared_);
+  auto message2 = std::string(message);
   deferred_.emplace_back(
-      [error, message = std::string(message)](DcSctpSocketCallbacks& cb) {
-        cb.OnAborted(error, message);
+      [error, message2](DcSctpSocketCallbacks& cb) {
+        cb.OnAborted(error, message2);
       });
 }
 
@@ -122,30 +124,31 @@ void CallbackDeferrer::OnStreamsResetFailed(
     rtc::ArrayView<const StreamID> outgoing_streams,
     absl::string_view reason) {
   RTC_DCHECK(prepared_);
+  auto streams = std::vector<StreamID>(outgoing_streams.begin(),
+                                       outgoing_streams.end());
+  auto reason2 = std::string(reason);
   deferred_.emplace_back(
-      [streams = std::vector<StreamID>(outgoing_streams.begin(),
-                                       outgoing_streams.end()),
-       reason = std::string(reason)](DcSctpSocketCallbacks& cb) {
-        cb.OnStreamsResetFailed(streams, reason);
+      [streams, reason2](DcSctpSocketCallbacks& cb) {
+        cb.OnStreamsResetFailed(streams, reason2);
       });
 }
 
 void CallbackDeferrer::OnStreamsResetPerformed(
     rtc::ArrayView<const StreamID> outgoing_streams) {
   RTC_DCHECK(prepared_);
+  auto streams = std::vector<StreamID>(outgoing_streams.begin(),
+                                       outgoing_streams.end());
   deferred_.emplace_back(
-      [streams = std::vector<StreamID>(outgoing_streams.begin(),
-                                       outgoing_streams.end())](
-          DcSctpSocketCallbacks& cb) { cb.OnStreamsResetPerformed(streams); });
+      [streams](DcSctpSocketCallbacks& cb) { cb.OnStreamsResetPerformed(streams); });
 }
 
 void CallbackDeferrer::OnIncomingStreamsReset(
     rtc::ArrayView<const StreamID> incoming_streams) {
   RTC_DCHECK(prepared_);
+  auto streams = std::vector<StreamID>(incoming_streams.begin(),
+                                       incoming_streams.end());       
   deferred_.emplace_back(
-      [streams = std::vector<StreamID>(incoming_streams.begin(),
-                                       incoming_streams.end())](
-          DcSctpSocketCallbacks& cb) { cb.OnIncomingStreamsReset(streams); });
+      [streams](DcSctpSocketCallbacks& cb) { cb.OnIncomingStreamsReset(streams); });
 }
 
 void CallbackDeferrer::OnBufferedAmountLow(StreamID stream_id) {

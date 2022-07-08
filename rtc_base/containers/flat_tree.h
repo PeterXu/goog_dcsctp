@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "absl/algorithm/container.h"
+#include "rtc_base/type_traits.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/containers/as_const.h"
 #include "rtc_base/containers/not_fn.h"
@@ -83,19 +84,19 @@ constexpr std::array<U, N> ToArray(const T (&data)[N]) {
 // std::pair's operator= is not constexpr prior to C++20. Thus we need this
 // small helper to invoke operator= on the .first and .second member explicitly.
 template <typename T>
-constexpr void Assign(T& lhs, T&& rhs) {
+CONSTEXPR void Assign(T& lhs, T&& rhs) {
   lhs = std::move(rhs);
 }
 
 template <typename T, typename U>
-constexpr void Assign(std::pair<T, U>& lhs, std::pair<T, U>&& rhs) {
+CONSTEXPR void Assign(std::pair<T, U>& lhs, std::pair<T, U>&& rhs) {
   Assign(lhs.first, std::move(rhs.first));
   Assign(lhs.second, std::move(rhs.second));
 }
 
 // constexpr swap implementation. std::swap is not constexpr prior to C++20.
 template <typename T>
-constexpr void Swap(T& lhs, T& rhs) {
+CONSTEXPR void Swap(T& lhs, T& rhs) {
   T tmp = std::move(lhs);
   Assign(lhs, std::move(rhs));
   Assign(rhs, std::move(tmp));
@@ -118,7 +119,7 @@ constexpr InputIt Next(InputIt it) {
 // because it has linear complexity for nearly sorted data, is stable, and
 // simple to implement.
 template <typename BidirIt, typename Compare>
-constexpr void InsertionSort(BidirIt first, BidirIt last, const Compare& comp) {
+CONSTEXPR void InsertionSort(BidirIt first, BidirIt last, const Compare& comp) {
   if (first == last)
     return;
 
@@ -153,7 +154,7 @@ class flat_tree {
 
   // Wraps the templated key comparison to compare values.
   struct value_compare {
-    constexpr bool operator()(const value_type& left,
+    CONSTEXPR bool operator()(const value_type& left,
                               const value_type& right) const {
       GetKeyFromValue extractor;
       return comp(extractor(left), extractor(right));
@@ -220,7 +221,7 @@ class flat_tree {
             const container_type& items,
             const key_compare& comp = key_compare());
 
-  constexpr flat_tree(sorted_unique_t,
+  CONSTEXPR flat_tree(sorted_unique_t,
                       container_type&& items,
                       const key_compare& comp = key_compare());
 
@@ -624,7 +625,7 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-constexpr flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
+CONSTEXPR flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     sorted_unique_t,
     container_type&& items,
     const KeyCompare& comp)
@@ -823,7 +824,9 @@ void flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::insert(
 
   // Provide a convenience lambda to obtain an iterator pointing past the last
   // old element. This needs to be dymanic due to possible re-allocations.
-  auto middle = [this, size = size()] { return std::next(begin(), size); };
+  //auto middle = [this, size = size()] { return std::next(begin(), size); };
+  auto isize = size();
+  auto middle = [this, isize] { return std::next(begin(), isize); };
 
   // For batch updates initialize the first insertion point.
   difference_type pos_first_new = size();

@@ -98,7 +98,7 @@ struct TimerOptions {
 class Timer {
  public:
   // The maximum timer duration - one day.
-  static constexpr DurationMs kMaxTimerDuration = DurationMs(24 * 3600 * 1000);
+  static CONSTEXPR DurationMs kMaxTimerDuration; // = DurationMs(24 * 3600 * 1000);
 
   // When expired, the timer handler can optionally return a new duration which
   // will be set as `duration` and used as base duration when the timer is

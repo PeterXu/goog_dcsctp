@@ -13,6 +13,9 @@
 
 #include <cstddef>
 #include <type_traits>
+#include "absl/meta/type_traits.h"
+#include "absl/utility/utility.h"
+#include "absl/memory/memory.h"
 
 namespace rtc {
 
@@ -144,11 +147,48 @@ static_assert(!IsIntlike<S>::value, "");
 
 #if (__cplusplus < 201703L)
 namespace std {
+
 template <class Iter>
 constexpr std::reverse_iterator<Iter> make_reverse_iterator(Iter i)
 {
   return std::reverse_iterator<Iter>(i);
 }
+
+template <typename T>
+using add_const_t = absl::add_const_t<T>;
+
+template <typename T>
+using decay_t = absl::decay_t<T>;
+
+template <bool B, typename T = void>
+using enable_if_t = absl::enable_if_t<B, T>;
+
+template <size_t... Ints>
+using index_sequence = absl::index_sequence<Ints...>;
+
+template <size_t N>
+using make_index_sequence = absl::make_index_sequence<N>;
+
+template <typename T, typename U = T>
+T exchange(T& obj, U&& new_value) {
+  T old_value = absl::move(obj);
+  obj = absl::forward<U>(new_value);
+  return old_value;
+}
+
+template <typename T, typename... Args>
+typename absl::memory_internal::MakeUniqueResult<T>::scalar make_unique(
+    Args&&... args) {
+  return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+template <typename T>
+typename absl::memory_internal::MakeUniqueResult<T>::array make_unique(size_t n) {
+  return std::unique_ptr<T>(new typename absl::remove_extent_t<T>[n]());
+}
+template <typename T, typename... Args>
+typename absl::memory_internal::MakeUniqueResult<T>::invalid make_unique(
+    Args&&... /* args */) = delete;
+
 }
 #endif
 

@@ -12,6 +12,7 @@
 
 #include <utility>
 
+#include "rtc_base/type_traits.h"
 #include "rtc_base/ref_counted_object.h"
 
 namespace rtc {
@@ -29,7 +30,7 @@ class HasAddRefAndRelease {
   static char Test(...);
 
  public:
-  static constexpr bool value = std::is_same_v<decltype(Test<T>(0)), int>;
+  static constexpr bool value = std::is_same<decltype(Test<T>(0)), int>::value;
 };
 }  // namespace webrtc_make_ref_counted_internal
 
@@ -79,8 +80,8 @@ class HasAddRefAndRelease {
 template <
     typename T,
     typename... Args,
-    typename std::enable_if<std::is_convertible_v<T*, RefCountInterface*> &&
-                                std::is_abstract_v<T>,
+    typename std::enable_if<std::is_convertible<T*, RefCountInterface*>::value &&
+                                std::is_abstract<T>::value,
                             T>::type* = nullptr>
 scoped_refptr<T> make_ref_counted(Args&&... args) {
   return scoped_refptr<T>(new RefCountedObject<T>(std::forward<Args>(args)...));
@@ -92,7 +93,7 @@ template <
     typename T,
     typename... Args,
     typename std::enable_if<
-        !std::is_convertible_v<T*, RefCountInterface*> &&
+        !std::is_convertible<T*, RefCountInterface*>::value &&
             webrtc_make_ref_counted_internal::HasAddRefAndRelease<T>::value,
         T>::type* = nullptr>
 scoped_refptr<T> make_ref_counted(Args&&... args) {
@@ -105,7 +106,7 @@ template <
     typename T,
     typename... Args,
     typename std::enable_if<
-        !std::is_convertible_v<T*, RefCountInterface*> &&
+        !std::is_convertible<T*, RefCountInterface*>::value &&
             !webrtc_make_ref_counted_internal::HasAddRefAndRelease<T>::value,
 
         T>::type* = nullptr>

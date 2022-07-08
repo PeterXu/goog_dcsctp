@@ -36,9 +36,7 @@ NET_SRCS = \
 
 
 
-### all sources
 SRCS = $(NET_SRCS)
-
 TMPS = $(SRCS:.cc=.o)
 OBJS = $(TMPS:.c=.o)
 

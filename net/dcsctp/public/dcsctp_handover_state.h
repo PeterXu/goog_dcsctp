@@ -105,17 +105,17 @@ class HandoverReadinessStatus
     : public webrtc::StrongAlias<class HandoverReadinessStatusTag, uint32_t> {
  public:
   // Constructs an empty `HandoverReadinessStatus` which represents ready state.
-  constexpr HandoverReadinessStatus()
+  CONSTEXPR HandoverReadinessStatus()
       : webrtc::StrongAlias<class HandoverReadinessStatusTag, uint32_t>(0) {}
   // Constructs status object that contains a single reason for not being
   // handover ready.
-  constexpr explicit HandoverReadinessStatus(HandoverUnreadinessReason reason)
+  CONSTEXPR explicit HandoverReadinessStatus(HandoverUnreadinessReason reason)
       : webrtc::StrongAlias<class HandoverReadinessStatusTag, uint32_t>(
             static_cast<uint32_t>(reason)) {}
 
   // Convenience methods
-  constexpr bool IsReady() const { return value() == 0; }
-  constexpr bool Contains(HandoverUnreadinessReason reason) const {
+  CONSTEXPR bool IsReady() const { return value() == 0; }
+  CONSTEXPR bool Contains(HandoverUnreadinessReason reason) const {
     return value() & static_cast<uint32_t>(reason);
   }
   HandoverReadinessStatus& Add(HandoverUnreadinessReason reason) {

@@ -42,7 +42,7 @@ absl::optional<SendQueue::DataToSend> StreamScheduler::Produce(
   RTC_LOG(LS_VERBOSE) << "Producing data, rescheduling=" << rescheduling
                       << ", active="
                       << StrJoin(active_streams_, ", ",
-                                 [&](rtc::StringBuilder& sb, const auto& p) {
+                                 [&](rtc::StringBuilder& sb, const webrtc::flat_set<Stream*, ActiveStreamComparator>::value_type& p) {
                                    sb << *p->stream_id() << "@"
                                       << *p->next_finish_time();
                                  });
@@ -62,7 +62,7 @@ absl::optional<SendQueue::DataToSend> StreamScheduler::Produce(
     } else {
       RTC_DLOG(LS_VERBOSE) << "Producing from previous stream: "
                            << *current_stream_->stream_id();
-      RTC_DCHECK(absl::c_any_of(active_streams_, [this](const auto* p) {
+      RTC_DCHECK(absl::c_any_of(active_streams_, [this](const Stream* p) {
         return p == current_stream_;
       }));
     }
@@ -172,7 +172,7 @@ void StreamScheduler::Stream::MakeActive(size_t bytes_to_send_next) {
   RTC_DCHECK(next_finish_time_ == VirtualTime::Zero());
   next_finish_time_ = next_finish_time;
   RTC_DCHECK(!absl::c_any_of(parent_.active_streams_,
-                             [this](const auto* p) { return p == this; }));
+                             [this](const Stream* p) { return p == this; }));
   parent_.active_streams_.emplace(this);
 }
 
@@ -185,7 +185,7 @@ void StreamScheduler::Stream::ForceMarkInactive() {
 void StreamScheduler::Stream::MakeInactive() {
   ForceMarkInactive();
   webrtc::EraseIf(parent_.active_streams_,
-                  [&](const auto* s) { return s == this; });
+                  [&](const Stream* s) { return s == this; });
 }
 
 std::set<StreamID> StreamScheduler::ActiveStreamsForTesting() const {

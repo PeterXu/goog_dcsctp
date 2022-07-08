@@ -2,7 +2,7 @@ CC = cc
 CXX = c++
 AR = ar rcs
 
-CFLAGS = -std=c++17 -Wall -fPIC -DPIC -g -O2 -Wno-unused-local-typedefs
+CFLAGS = -std=c++11 -Wall -fPIC -DPIC -g -O2 -Wno-unused-local-typedefs
 LDFLAGS = -pthread
 DFLAGS = -shared
 

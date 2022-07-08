@@ -89,12 +89,12 @@ size_t InterleavedReassemblyStreams::Stream::AssembleMessage(
   std::vector<uint8_t> payload;
   size_t payload_size = absl::c_accumulate(
       tsn_chunks, 0,
-      [](size_t v, const auto& p) { return v + p.second.second.size(); });
+      [](size_t v, const ChunkMap::value_type& p) { return v + p.second.second.size(); });
   payload.reserve(payload_size);
 
-  for (auto& item : tsn_chunks) {
-    const UnwrappedTSN tsn = item.second.first;
-    const Data& data = item.second.second;
+  for (auto& iter : tsn_chunks) {
+    const UnwrappedTSN& tsn = iter.second.first;
+    const Data& data = iter.second.second;
     tsns.push_back(tsn);
     payload.insert(payload.end(), data.payload.begin(), data.payload.end());
   }
@@ -114,7 +114,7 @@ size_t InterleavedReassemblyStreams::Stream::EraseTo(MID message_id) {
   while (it != chunks_by_mid_.end() && it->first <= unwrapped_mid) {
     removed_bytes += absl::c_accumulate(
         it->second, 0,
-        [](size_t r2, const auto& q) { return r2 + q.second.second.size(); });
+        [](size_t r2, const ChunkMap::value_type& q) { return r2 + q.second.second.size(); });
     it = chunks_by_mid_.erase(it);
   }
 
@@ -137,8 +137,9 @@ int InterleavedReassemblyStreams::Stream::Add(UnwrappedTSN tsn, Data data) {
   int queued_bytes = data.size();
   UnwrappedMID mid = mid_unwrapper_.Unwrap(data.message_id);
   FSN fsn = data.fsn;
-  auto [unused, inserted] =
+  auto iret = 
       chunks_by_mid_[mid].emplace(fsn, std::make_pair(tsn, std::move(data)));
+  auto inserted = iret.second;
   if (!inserted) {
     return 0;
   }
@@ -230,7 +231,9 @@ void InterleavedReassemblyStreams::ResetStreams(
 HandoverReadinessStatus InterleavedReassemblyStreams::GetHandoverReadiness()
     const {
   HandoverReadinessStatus status;
-  for (const auto& [stream_id, stream] : streams_) {
+  for (const auto& iter : streams_) {
+    auto& stream_id = iter.first;
+    auto& stream = iter.second;
     if (stream.has_unassembled_chunks()) {
       status.Add(
           stream_id.unordered
@@ -244,7 +247,8 @@ HandoverReadinessStatus InterleavedReassemblyStreams::GetHandoverReadiness()
 
 void InterleavedReassemblyStreams::AddHandoverState(
     DcSctpSocketHandoverState& state) {
-  for (const auto& [unused, stream] : streams_) {
+  for (const auto& iter : streams_) {
+    auto& stream = iter.second;
     stream.AddHandoverState(state);
   }
 }

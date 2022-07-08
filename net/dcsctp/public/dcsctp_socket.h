@@ -85,7 +85,7 @@ enum class ErrorKind {
   kUnsupportedOperation,
 };
 
-inline constexpr absl::string_view ToString(ErrorKind error) {
+inline CONSTEXPR absl::string_view ToString(ErrorKind error) {
   switch (error) {
     case ErrorKind::kNoError:
       return "NO_ERROR";
@@ -126,7 +126,7 @@ enum class SendStatus {
   kErrorShuttingDown,
 };
 
-inline constexpr absl::string_view ToString(SendStatus error) {
+inline CONSTEXPR absl::string_view ToString(SendStatus error) {
   switch (error) {
     case SendStatus::kSuccess:
       return "SUCCESS";
@@ -151,7 +151,7 @@ enum class ResetStreamsStatus {
   kNotSupported,
 };
 
-inline constexpr absl::string_view ToString(ResetStreamsStatus error) {
+inline CONSTEXPR absl::string_view ToString(ResetStreamsStatus error) {
   switch (error) {
     case ResetStreamsStatus::kNotConnected:
       return "NOT_CONNECTED";
@@ -187,7 +187,7 @@ enum class SctpImplementation {
   kOther,
 };
 
-inline constexpr absl::string_view ToString(SctpImplementation implementation) {
+inline CONSTEXPR absl::string_view ToString(SctpImplementation implementation) {
   switch (implementation) {
     case SctpImplementation::kUnknown:
       return "unknown";

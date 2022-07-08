@@ -87,23 +87,23 @@ struct DcSctpOptions {
 
   // Maximum send buffer size. It will not be possible to queue more data than
   // this before sending it.
-  size_t max_send_buffer_size = 2'000'000;
+  size_t max_send_buffer_size = 2000000;
 
   // A threshold that, when the amount of data in the send buffer goes below
   // this value, will trigger `DcSctpCallbacks::OnTotalBufferedAmountLow`.
-  size_t total_buffered_amount_low_threshold = 1'800'000;
+  size_t total_buffered_amount_low_threshold = 1800000;
 
   // Max allowed RTT value. When the RTT is measured and it's found to be larger
   // than this value, it will be discarded and not used for e.g. any RTO
   // calculation. The default value is an extreme maximum but can be adapted
   // to better match the environment.
-  DurationMs rtt_max = DurationMs(60'000);
+  DurationMs rtt_max = DurationMs(60000);
 
   // Initial RTO value.
   DurationMs rto_initial = DurationMs(500);
 
   // Maximum RTO value.
-  DurationMs rto_max = DurationMs(60'000);
+  DurationMs rto_max = DurationMs(60000);
 
   // Minimum RTO value. This must be larger than an expected peer delayed ack
   // timeout.

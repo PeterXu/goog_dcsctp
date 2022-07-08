@@ -15,9 +15,12 @@
 
 #include <type_traits>
 #include <utility>
+#include "rtc_base/type_traits.h"
+#include "absl/base/internal/invoke.h"
 
 namespace webrtc {
 
+#if (__cplusplus >= 201703L)
 namespace invoke_internal {
 
 // Helper struct and alias to deduce the class type from a member function
@@ -142,6 +145,7 @@ constexpr decltype(auto) InvokeImpl(F&& f, Args&&... args) {
 }
 
 }  // namespace invoke_internal
+#endif
 
 // Implementation of C++17's std::invoke. This is not based on implementation
 // referenced in original std::invoke proposal, but rather a manual
@@ -151,11 +155,20 @@ constexpr decltype(auto) InvokeImpl(F&& f, Args&&... args) {
 // - https://wg21.link/n4169#implementability
 // - https://en.cppreference.com/w/cpp/utility/functional/invoke
 // - https://wg21.link/func.invoke
+#if (__cplusplus >= 201703L)
+#define DECLTYPE_AUTO decltype(auto)
 template <typename F, typename... Args>
 constexpr decltype(auto) invoke(F&& f, Args&&... args) {
   return invoke_internal::InvokeImpl(std::forward<F>(f),
                                      std::forward<Args>(args)...);
 }
+#else
+#define DECLTYPE_AUTO absl::base_internal::invoke_result_t<F, Args...>
+template <typename F, typename... Args>
+absl::base_internal::invoke_result_t<F, Args...> invoke(F&& f, Args&&... args) {
+  return absl::base_internal::invoke<F, Args...>(f, args...);
+}
+#endif
 
 }  // namespace webrtc
 

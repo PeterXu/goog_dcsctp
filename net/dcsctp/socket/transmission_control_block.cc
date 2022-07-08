@@ -190,7 +190,9 @@ void TransmissionControlBlock::MaybeSendFastRetransmit() {
   SctpPacket::Builder builder(peer_verification_tag_, options_);
   auto chunks = retransmission_queue_.GetChunksForFastRetransmit(
       builder.bytes_remaining());
-  for (auto& [tsn, data] : chunks) {
+  for (auto& iter : chunks) {
+    auto& tsn = iter.first;
+    auto& data = iter.second;
     if (capabilities_.message_interleaving) {
       builder.Add(IDataChunk(tsn, std::move(data), false));
     } else {
@@ -236,7 +238,9 @@ void TransmissionControlBlock::SendBufferedPackets(SctpPacket::Builder& builder,
 
     auto chunks =
         retransmission_queue_.GetChunksToSend(now, builder.bytes_remaining());
-    for (auto& [tsn, data] : chunks) {
+    for (auto& iter : chunks) {
+      auto& tsn = iter.first;
+      auto& data = iter.second;
       if (capabilities_.message_interleaving) {
         builder.Add(IDataChunk(tsn, std::move(data), false));
       } else {

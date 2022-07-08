@@ -15,7 +15,7 @@
 
 namespace dcsctp {
 namespace {
-constexpr absl::string_view HandoverUnreadinessReasonToString(
+CONSTEXPR absl::string_view HandoverUnreadinessReasonToString(
     HandoverUnreadinessReason reason) {
   switch (reason) {
     case HandoverUnreadinessReason::kWrongConnectionState:

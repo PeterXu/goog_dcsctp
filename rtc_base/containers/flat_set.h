@@ -156,7 +156,7 @@ namespace webrtc {
 //   bool operator<=(const flat_set&, const flat_set);
 //
 template <class Key,
-          class Compare = std::less<>,
+          class Compare = std::less<void>,
           class Container = std::vector<Key>>
 using flat_set = typename ::webrtc::flat_containers_internal::
     flat_tree<Key, webrtc::identity, Compare, Container>;

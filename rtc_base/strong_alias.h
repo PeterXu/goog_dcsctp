@@ -13,6 +13,7 @@
 
 #include <type_traits>
 #include <utility>
+#include "rtc_base/type_traits.h"
 
 namespace webrtc {
 
@@ -26,44 +27,44 @@ template <typename TagType, typename TheUnderlyingType>
 class StrongAlias {
  public:
   using UnderlyingType = TheUnderlyingType;
-  constexpr StrongAlias() = default;
-  constexpr explicit StrongAlias(const UnderlyingType& v) : value_(v) {}
-  constexpr explicit StrongAlias(UnderlyingType&& v) noexcept
+  CONSTEXPR StrongAlias() = default;
+  CONSTEXPR explicit StrongAlias(const UnderlyingType& v) : value_(v) {}
+  CONSTEXPR explicit StrongAlias(UnderlyingType&& v) noexcept
       : value_(std::move(v)) {}
 
-  constexpr UnderlyingType* operator->() { return &value_; }
-  constexpr const UnderlyingType* operator->() const { return &value_; }
+  CONSTEXPR UnderlyingType* operator->() { return &value_; }
+  CONSTEXPR const UnderlyingType* operator->() const { return &value_; }
 
-  constexpr UnderlyingType& operator*() & { return value_; }
-  constexpr const UnderlyingType& operator*() const& { return value_; }
-  constexpr UnderlyingType&& operator*() && { return std::move(value_); }
-  constexpr const UnderlyingType&& operator*() const&& {
+  CONSTEXPR UnderlyingType& operator*() & { return value_; }
+  CONSTEXPR const UnderlyingType& operator*() const& { return value_; }
+  CONSTEXPR UnderlyingType&& operator*() && { return std::move(value_); }
+  CONSTEXPR const UnderlyingType&& operator*() const&& {
     return std::move(value_);
   }
 
-  constexpr UnderlyingType& value() & { return value_; }
-  constexpr const UnderlyingType& value() const& { return value_; }
-  constexpr UnderlyingType&& value() && { return std::move(value_); }
-  constexpr const UnderlyingType&& value() const&& { return std::move(value_); }
+  CONSTEXPR UnderlyingType& value() & { return value_; }
+  CONSTEXPR const UnderlyingType& value() const& { return value_; }
+  CONSTEXPR UnderlyingType&& value() && { return std::move(value_); }
+  CONSTEXPR const UnderlyingType&& value() const&& { return std::move(value_); }
 
-  constexpr explicit operator const UnderlyingType&() const& { return value_; }
+  CONSTEXPR explicit operator const UnderlyingType&() const& { return value_; }
 
-  constexpr bool operator==(const StrongAlias& other) const {
+  CONSTEXPR bool operator==(const StrongAlias& other) const {
     return value_ == other.value_;
   }
-  constexpr bool operator!=(const StrongAlias& other) const {
+  CONSTEXPR bool operator!=(const StrongAlias& other) const {
     return value_ != other.value_;
   }
-  constexpr bool operator<(const StrongAlias& other) const {
+  CONSTEXPR bool operator<(const StrongAlias& other) const {
     return value_ < other.value_;
   }
-  constexpr bool operator<=(const StrongAlias& other) const {
+  CONSTEXPR bool operator<=(const StrongAlias& other) const {
     return value_ <= other.value_;
   }
-  constexpr bool operator>(const StrongAlias& other) const {
+  CONSTEXPR bool operator>(const StrongAlias& other) const {
     return value_ > other.value_;
   }
-  constexpr bool operator>=(const StrongAlias& other) const {
+  CONSTEXPR bool operator>=(const StrongAlias& other) const {
     return value_ >= other.value_;
   }
 

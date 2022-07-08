@@ -38,74 +38,74 @@ using StreamPriority = webrtc::StrongAlias<class StreamPriorityTag, uint16_t>;
 // Duration, as milliseconds. Overflows after 24 days.
 class DurationMs : public webrtc::StrongAlias<class DurationMsTag, int32_t> {
  public:
-  constexpr explicit DurationMs(const UnderlyingType& v)
+  CONSTEXPR explicit DurationMs(const UnderlyingType& v)
       : webrtc::StrongAlias<class DurationMsTag, int32_t>(v) {}
 
   // Convenience methods for working with time.
-  constexpr DurationMs& operator+=(DurationMs d) {
+  CONSTEXPR DurationMs& operator+=(DurationMs d) {
     value_ += d.value_;
     return *this;
   }
-  constexpr DurationMs& operator-=(DurationMs d) {
+  CONSTEXPR DurationMs& operator-=(DurationMs d) {
     value_ -= d.value_;
     return *this;
   }
   template <typename T>
-  constexpr DurationMs& operator*=(T factor) {
+  CONSTEXPR DurationMs& operator*=(T factor) {
     value_ *= factor;
     return *this;
   }
 };
 
-constexpr inline DurationMs operator+(DurationMs lhs, DurationMs rhs) {
+CONSTEXPR inline DurationMs operator+(DurationMs lhs, DurationMs rhs) {
   return lhs += rhs;
 }
-constexpr inline DurationMs operator-(DurationMs lhs, DurationMs rhs) {
+CONSTEXPR inline DurationMs operator-(DurationMs lhs, DurationMs rhs) {
   return lhs -= rhs;
 }
 template <typename T>
-constexpr inline DurationMs operator*(DurationMs lhs, T rhs) {
+CONSTEXPR inline DurationMs operator*(DurationMs lhs, T rhs) {
   return lhs *= rhs;
 }
 template <typename T>
-constexpr inline DurationMs operator*(T lhs, DurationMs rhs) {
+CONSTEXPR inline DurationMs operator*(T lhs, DurationMs rhs) {
   return rhs *= lhs;
 }
-constexpr inline int32_t operator/(DurationMs lhs, DurationMs rhs) {
+CONSTEXPR inline int32_t operator/(DurationMs lhs, DurationMs rhs) {
   return lhs.value() / rhs.value();
 }
 
 // Represents time, in milliseconds since a client-defined epoch.
 class TimeMs : public webrtc::StrongAlias<class TimeMsTag, int64_t> {
  public:
-  constexpr explicit TimeMs(const UnderlyingType& v)
+  CONSTEXPR explicit TimeMs(const UnderlyingType& v)
       : webrtc::StrongAlias<class TimeMsTag, int64_t>(v) {}
 
   // Convenience methods for working with time.
-  constexpr TimeMs& operator+=(DurationMs d) {
+  CONSTEXPR TimeMs& operator+=(DurationMs d) {
     value_ += *d;
     return *this;
   }
-  constexpr TimeMs& operator-=(DurationMs d) {
+  CONSTEXPR TimeMs& operator-=(DurationMs d) {
     value_ -= *d;
     return *this;
   }
 
-  static constexpr TimeMs InfiniteFuture() {
+  static CONSTEXPR TimeMs InfiniteFuture() {
     return TimeMs(std::numeric_limits<int64_t>::max());
   }
 };
 
-constexpr inline TimeMs operator+(TimeMs lhs, DurationMs rhs) {
+CONSTEXPR inline TimeMs operator+(TimeMs lhs, DurationMs rhs) {
   return lhs += rhs;
 }
-constexpr inline TimeMs operator+(DurationMs lhs, TimeMs rhs) {
+CONSTEXPR inline TimeMs operator+(DurationMs lhs, TimeMs rhs) {
   return rhs += lhs;
 }
-constexpr inline TimeMs operator-(TimeMs lhs, DurationMs rhs) {
+CONSTEXPR inline TimeMs operator-(TimeMs lhs, DurationMs rhs) {
   return lhs -= rhs;
 }
-constexpr inline DurationMs operator-(TimeMs lhs, TimeMs rhs) {
+CONSTEXPR inline DurationMs operator-(TimeMs lhs, TimeMs rhs) {
   return DurationMs(*lhs - *rhs);
 }
 
@@ -114,11 +114,11 @@ constexpr inline DurationMs operator-(TimeMs lhs, TimeMs rhs) {
 class MaxRetransmits
     : public webrtc::StrongAlias<class MaxRetransmitsTag, uint16_t> {
  public:
-  constexpr explicit MaxRetransmits(const UnderlyingType& v)
+  CONSTEXPR explicit MaxRetransmits(const UnderlyingType& v)
       : webrtc::StrongAlias<class MaxRetransmitsTag, uint16_t>(v) {}
 
   // There should be no limit - the message should be sent reliably.
-  static constexpr MaxRetransmits NoLimit() {
+  static CONSTEXPR MaxRetransmits NoLimit() {
     return MaxRetransmits(std::numeric_limits<uint16_t>::max());
   }
 };
@@ -131,12 +131,12 @@ class MaxRetransmits
 // set.
 class LifecycleId : public webrtc::StrongAlias<class LifecycleIdTag, uint64_t> {
  public:
-  constexpr explicit LifecycleId(const UnderlyingType& v)
+  CONSTEXPR explicit LifecycleId(const UnderlyingType& v)
       : webrtc::StrongAlias<class LifecycleIdTag, uint64_t>(v) {}
 
-  constexpr bool IsSet() const { return value_ != 0; }
+  CONSTEXPR bool IsSet() const { return value_ != 0; }
 
-  static constexpr LifecycleId NotSet() { return LifecycleId(0); }
+  static CONSTEXPR LifecycleId NotSet() { return LifecycleId(0); }
 };
 }  // namespace dcsctp
 

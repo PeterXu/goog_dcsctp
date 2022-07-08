@@ -136,7 +136,7 @@ class DcSctpSocket : public DcSctpSocketInterface {
   std::string log_prefix() const;
 
   bool IsConsistent() const;
-  static constexpr absl::string_view ToString(DcSctpSocket::State state);
+  static CONSTEXPR absl::string_view ToString(DcSctpSocket::State state);
 
   void CreateTransmissionControlBlock(const Capabilities& capabilities,
                                       VerificationTag my_verification_tag,

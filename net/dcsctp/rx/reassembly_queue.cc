@@ -183,7 +183,9 @@ bool ReassemblyQueue::MaybeResetStreamsDeferred(TSN cum_ack_tsn) {
       // https://tools.ietf.org/html/rfc6525#section-5.2.2
       // "Any queued TSNs (queued at step E2) MUST now be released and processed
       // normally."
-      for (auto& [tsn, data] : deferred_chunks) {
+      for (auto& iter : deferred_chunks) {
+        auto& tsn = iter.first;
+        auto& data = iter.second;
         queued_bytes_ -= data.size();
         Add(tsn, std::move(data));
       }

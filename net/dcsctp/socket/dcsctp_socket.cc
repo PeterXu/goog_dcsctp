@@ -230,7 +230,7 @@ bool DcSctpSocket::IsConsistent() const {
   }
 }
 
-constexpr absl::string_view DcSctpSocket::ToString(DcSctpSocket::State state) {
+CONSTEXPR absl::string_view DcSctpSocket::ToString(DcSctpSocket::State state) {
   switch (state) {
     case DcSctpSocket::State::kClosed:
       return "CLOSED";

@@ -27,22 +27,22 @@ struct NotFnImpl {
   F f;
 
   template <typename... Args>
-  constexpr decltype(auto) operator()(Args&&... args) & noexcept {
+  CONSTEXPR DECLTYPE_AUTO operator()(Args&&... args) & noexcept {
     return !webrtc::invoke(f, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  constexpr decltype(auto) operator()(Args&&... args) const& noexcept {
+  CONSTEXPR DECLTYPE_AUTO operator()(Args&&... args) const& noexcept {
     return !webrtc::invoke(f, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  constexpr decltype(auto) operator()(Args&&... args) && noexcept {
+  CONSTEXPR DECLTYPE_AUTO operator()(Args&&... args) && noexcept {
     return !webrtc::invoke(std::move(f), std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  constexpr decltype(auto) operator()(Args&&... args) const&& noexcept {
+  CONSTEXPR DECLTYPE_AUTO operator()(Args&&... args) const&& noexcept {
     return !webrtc::invoke(std::move(f), std::forward<Args>(args)...);
   }
 };

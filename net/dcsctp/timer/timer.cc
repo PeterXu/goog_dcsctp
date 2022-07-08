@@ -51,7 +51,7 @@ DurationMs GetBackoffDuration(const TimerOptions& options,
 }
 }  // namespace
 
-constexpr DurationMs Timer::kMaxTimerDuration;
+CONSTEXPR DurationMs Timer::kMaxTimerDuration = DurationMs(24 * 3600 * 1000);
 
 Timer::Timer(TimerID id,
              absl::string_view name,

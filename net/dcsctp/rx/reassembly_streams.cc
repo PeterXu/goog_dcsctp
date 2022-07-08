@@ -36,7 +36,7 @@ ReassembledMessage AssembleMessage(std::map<UnwrappedTSN, Data>::iterator start,
 
   size_t payload_size = std::accumulate(
       start, end, 0,
-      [](size_t v, const auto& p) { return v + p.second.size(); });
+      [](size_t v, const std::map<UnwrappedTSN, Data>::value_type& p) { return v + p.second.size(); });
 
   tsns.reserve(count);
   payload.reserve(payload_size);
