@@ -177,12 +177,13 @@ PlatformThread PlatformThread::SpawnThread(
   RTC_DCHECK(!name.empty());
   // TODO(tommi): Consider lowering the limit to 15 (limit on Linux).
   RTC_DCHECK(name.length() < 64);
+  auto thread_function2 = std::move(thread_function);
+  auto name2 = std::string(name);
   auto start_thread_function_ptr =
-      new std::function<void()>([thread_function = std::move(thread_function),
-                                 name = std::string(name), attributes] {
-        rtc::SetCurrentThreadName(name.c_str());
+      new std::function<void()>([thread_function2, name2, attributes] {
+        rtc::SetCurrentThreadName(name2.c_str());
         SetPriority(attributes.priority);
-        thread_function();
+        thread_function2();
       });
 #if defined(WEBRTC_WIN)
   // See bug 2902 for background on STACK_SIZE_PARAM_IS_A_RESERVATION.

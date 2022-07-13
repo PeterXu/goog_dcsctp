@@ -948,9 +948,10 @@ void Thread::Send(const Location& posted_from,
     done_event.reset(new rtc::Event());
 
   bool ready = false;
+  auto done = done_event.get();
   PostTask(webrtc::ToQueuedTask(
       [&msg]() mutable { msg.phandler->OnMessage(&msg); },
-      [this, &ready, current_thread, done = done_event.get()] {
+      [this, &ready, current_thread, done] {
         if (current_thread) {
           CritScope cs(&crit_);
           ready = true;

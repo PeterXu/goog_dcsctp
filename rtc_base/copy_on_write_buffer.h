@@ -74,8 +74,8 @@ class RTC_EXPORT CopyOnWriteBuffer {
 
   // Construct a buffer from a vector like type.
   template <typename VecT,
-            typename ElemT = typename std::remove_pointer_t<
-                decltype(std::declval<VecT>().data())>,
+            typename ElemT = typename std::remove_pointer<
+                decltype(std::declval<VecT>().data())>::value,
             typename std::enable_if_t<
                 !std::is_same<VecT, CopyOnWriteBuffer>::value &&
                 HasDataAndSize<VecT, ElemT>::value &&
@@ -235,8 +235,8 @@ class RTC_EXPORT CopyOnWriteBuffer {
   }
 
   template <typename VecT,
-            typename ElemT = typename std::remove_pointer_t<
-                decltype(std::declval<VecT>().data())>,
+            typename ElemT = typename std::remove_pointer<
+                decltype(std::declval<VecT>().data())>::value,
             typename std::enable_if_t<
                 HasDataAndSize<VecT, ElemT>::value &&
                 internal::BufferCompat<uint8_t, ElemT>::value>* = nullptr>

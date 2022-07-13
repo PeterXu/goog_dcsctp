@@ -4,7 +4,67 @@ INCLUDE += -I. -Ithird_party/abseil-cpp
 
 ###> sources
 
-## net/dcsctp
+## api
+API_SRCS = \
+	api/task_queue/default_task_queue_factory_stdlib.cc  \
+	api/task_queue/task_queue_base.cc \
+	api/task_queue/pending_task_safety_flag.cc \
+	api/units/data_rate.cc \
+	api/units/data_size.cc \
+	api/units/frequency.cc \
+	api/units/time_delta.cc \
+	api/units/timestamp.cc
+
+## rtc_base
+RTC_SRCS1 = \
+	rtc_base/async_resolver.cc \
+	rtc_base/async_resolver_interface.cc \
+	rtc_base/checks.cc \
+	rtc_base/copy_on_write_buffer.cc \
+	rtc_base/event.cc \
+	rtc_base/event_tracer.cc \
+	rtc_base/fake_clock.cc \
+	rtc_base/gunit.cc \
+	rtc_base/ip_address.cc \
+	rtc_base/location.cc \
+	rtc_base/logging.cc \
+	rtc_base/message_handler.cc \
+	rtc_base/net_helper.cc \
+	rtc_base/net_helpers.cc \
+	rtc_base/null_socket_server.cc \
+	rtc_base/platform_thread.cc \
+	rtc_base/platform_thread_types.cc \
+	rtc_base/random.cc \
+	rtc_base/socket.cc \
+	rtc_base/socket_address.cc \
+	rtc_base/string_encode.cc \
+	rtc_base/string_to_number.cc \
+	rtc_base/string_utils.cc \
+	rtc_base/system_time.cc \
+	rtc_base/task_queue.cc \
+	rtc_base/task_queue_stdlib.cc \
+	rtc_base/thread.cc \
+	rtc_base/time_utils.cc \
+	rtc_base/zero_memory.cc
+
+RTC_SRCS2 = \
+	rtc_base/containers/flat_tree.cc \
+	rtc_base/deprecated/recursive_critical_section.cc \
+	rtc_base/internal/default_socket_server.cc \
+	rtc_base/strings/string_builder.cc \
+	rtc_base/strings/string_format.cc \
+	rtc_base/synchronization/sequence_checker_internal.cc \
+	rtc_base/synchronization/yield.cc \
+	rtc_base/synchronization/yield_policy.cc \
+	rtc_base/third_party/sigslot/sigslot.cc
+
+RTC_SRCS = $(RTC_SRCS1) $(RTC_SRCS2)
+
+## system
+SYS_SRCS = \
+	system_wrappers/source/clock.cc
+
+## net
 NET_SRCS = \
 	net/dcsctp/packet/chunk_validators.cc \
 	net/dcsctp/packet/crc32c.cc \
@@ -36,8 +96,8 @@ NET_SRCS = \
 
 
 
-SRCS = $(NET_SRCS)
-TMPS = $(SRCS:.cc=.o)
+ALL_SRCS = $(API_SRCS) $(RTC_SRCS) $(SYS_SRCS) $(NET_SRCS)
+TMPS = $(ALL_SRCS:.cc=.o)
 OBJS = $(TMPS:.c=.o)
 
 .cc.o:

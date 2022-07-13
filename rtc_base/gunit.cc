@@ -15,6 +15,7 @@
 #include "absl/strings/match.h"
 #include "absl/strings/string_view.h"
 
+#if 0
 ::testing::AssertionResult AssertStartsWith(const char* text_expr,
                                             const char* prefix_expr,
                                             absl::string_view text,
@@ -41,3 +42,4 @@
            << substr_expr << "\nwhich is\n\"" << substr << "\"";
   }
 }
+#endif
