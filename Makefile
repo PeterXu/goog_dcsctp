@@ -3,8 +3,8 @@ CXX = c++
 AR = ar rcs
 
 CFLAGS = -std=c++11 -Wall -fPIC -DPIC -g -O2 -Wno-unused-local-typedefs
-LDFLAGS = -pthread
-DFLAGS = -shared
+LDFLAGS = -pthread -shared
+CPPFLAGS = -MMD -MP
 
 OS=$(shell uname | tr 'a-z' 'A-Z')
 ARCH=$(shell uname -p)
@@ -17,7 +17,7 @@ endif
 
 ifeq ($(OS),DARWIN)
 AR = libtool -static -o
-DFLAGS += -dynamiclib
+LDFLAGS += -dynamiclib
 CFLAGS += -DWEBRTC_POSIX -DWEBRTC_MAC
 DYEXT = dylib
 endif
