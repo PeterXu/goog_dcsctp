@@ -6,6 +6,8 @@ INCLUDE += -I. -Ithird_party/abseil-cpp
 
 ## api
 API_SRCS = \
+	api/data_channel_interface.cc \
+	api/rtc_error.cc \
 	api/task_queue/default_task_queue_factory_stdlib.cc  \
 	api/task_queue/task_queue_base.cc \
 	api/task_queue/pending_task_safety_flag.cc \
@@ -20,10 +22,12 @@ RTC_SRCS1 = \
 	rtc_base/async_packet_socket.cc \
 	rtc_base/async_resolver.cc \
 	rtc_base/async_resolver_interface.cc \
+	rtc_base/buffer_queue.cc \
 	rtc_base/byte_buffer.cc \
 	rtc_base/callback_list.cc \
 	rtc_base/checks.cc \
 	rtc_base/copy_on_write_buffer.cc \
+	rtc_base/crc32.cc \
 	rtc_base/event.cc \
 	rtc_base/event_tracer.cc \
 	rtc_base/fake_clock.cc \
@@ -64,7 +68,13 @@ RTC_SRCS2 = \
 	rtc_base/synchronization/yield_policy.cc \
 	rtc_base/third_party/sigslot/sigslot.cc
 
-RTC_SRCS = $(RTC_SRCS1) $(RTC_SRCS2)
+ifeq ($(OS),DARWIN)
+RTC_SRCS3 = rtc_base/system/cocoa_threading.mm
+else
+RTC_SRCS3 =
+endif
+
+RTC_SRCS = $(RTC_SRCS1) $(RTC_SRCS2) $(RTC_SRCS3)
 
 ## system
 SYS_SRCS = \
@@ -107,8 +117,8 @@ PC_SRCS = \
 
 
 ALL_SRCS = $(API_SRCS) $(RTC_SRCS) $(SYS_SRCS) $(NET_SRCS) $(PC_SRCS)
-TMPS = $(ALL_SRCS:.cc=.o)
-OBJS = $(TMPS:.c=.o)
+TMPS = $(ALL_SRCS:.mm=.o)
+OBJS = $(TMPS:.cc=.o)
 DEPS = $(OBJS:.o=.d)
 
 
@@ -143,9 +153,9 @@ ifneq ($(filter clean,$(MAKECMDGOALS)),clean)
 -include $(DEPS)
 endif
 
-%.o : %.cc
+%.o : %.mm
 	$(CXX) $(CFLAGS) $(INCLUDE) $(CPPFLAGS) -c $<  -o $@
 
-%.o : %.c
-	$(CC) $(CFLAGS) $(INCLUDE) $(CPPFLAGS) -c $<  -o $@
+%.o : %.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) $(CPPFLAGS) -c $<  -o $@
 
