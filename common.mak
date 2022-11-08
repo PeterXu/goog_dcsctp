@@ -39,10 +39,12 @@ RTC_SRCS1 = \
 	rtc_base/net_helper.cc \
 	rtc_base/net_helpers.cc \
 	rtc_base/network_constants.cc \
+	rtc_base/network_monitor.cc \
 	rtc_base/network_route.cc \
 	rtc_base/null_socket_server.cc \
 	rtc_base/platform_thread.cc \
 	rtc_base/platform_thread_types.cc \
+	rtc_base/physical_socket_server.cc \
 	rtc_base/random.cc \
 	rtc_base/socket.cc \
 	rtc_base/socket_address.cc \
@@ -83,9 +85,54 @@ SYS_SRCS = \
 ## net
 NET_SRCS = \
 	net/dcsctp/packet/chunk_validators.cc \
+	net/dcsctp/packet/chunk/abort_chunk.cc \
+	net/dcsctp/packet/chunk/chunk.cc \
+	net/dcsctp/packet/chunk/cookie_ack_chunk.cc \
+	net/dcsctp/packet/chunk/cookie_echo_chunk.cc \
+	net/dcsctp/packet/chunk/data_chunk.cc \
+	net/dcsctp/packet/chunk/error_chunk.cc \
+	net/dcsctp/packet/chunk/forward_tsn_chunk.cc \
+	net/dcsctp/packet/chunk/heartbeat_ack_chunk.cc \
+	net/dcsctp/packet/chunk/heartbeat_request_chunk.cc \
+	net/dcsctp/packet/chunk/idata_chunk.cc \
+	net/dcsctp/packet/chunk/iforward_tsn_chunk.cc \
+	net/dcsctp/packet/chunk/init_ack_chunk.cc \
+	net/dcsctp/packet/chunk/init_chunk.cc \
+	net/dcsctp/packet/chunk/reconfig_chunk.cc \
+	net/dcsctp/packet/chunk/sack_chunk.cc \
+	net/dcsctp/packet/chunk/shutdown_ack_chunk.cc \
+	net/dcsctp/packet/chunk/shutdown_chunk.cc \
+	net/dcsctp/packet/chunk/shutdown_complete_chunk.cc \
+	\
 	net/dcsctp/packet/crc32c.cc \
+	\
+	net/dcsctp/packet/error_cause/cookie_received_while_shutting_down_cause.cc \
+	net/dcsctp/packet/error_cause/error_cause.cc \
+	net/dcsctp/packet/error_cause/invalid_mandatory_parameter_cause.cc \
+	net/dcsctp/packet/error_cause/invalid_stream_identifier_cause.cc \
+	net/dcsctp/packet/error_cause/missing_mandatory_parameter_cause.cc \
+	net/dcsctp/packet/error_cause/no_user_data_cause.cc \
+	net/dcsctp/packet/error_cause/out_of_resource_error_cause.cc \
+	net/dcsctp/packet/error_cause/protocol_violation_cause.cc \
+	net/dcsctp/packet/error_cause/restart_of_an_association_with_new_address_cause.cc \
+	net/dcsctp/packet/error_cause/stale_cookie_error_cause.cc \
+	net/dcsctp/packet/error_cause/unrecognized_chunk_type_cause.cc \
+	net/dcsctp/packet/error_cause/unrecognized_parameter_cause.cc \
+	net/dcsctp/packet/error_cause/unresolvable_address_cause.cc \
+	net/dcsctp/packet/error_cause/user_initiated_abort_cause.cc \
 	net/dcsctp/packet/sctp_packet.cc \
 	net/dcsctp/packet/tlv_trait.cc \
+	net/dcsctp/packet/parameter/add_incoming_streams_request_parameter.cc \
+	net/dcsctp/packet/parameter/add_outgoing_streams_request_parameter.cc \
+	net/dcsctp/packet/parameter/forward_tsn_supported_parameter.cc \
+	net/dcsctp/packet/parameter/heartbeat_info_parameter.cc \
+	net/dcsctp/packet/parameter/incoming_ssn_reset_request_parameter.cc \
+	net/dcsctp/packet/parameter/outgoing_ssn_reset_request_parameter.cc \
+	net/dcsctp/packet/parameter/parameter.cc \
+	net/dcsctp/packet/parameter/reconfiguration_response_parameter.cc \
+	net/dcsctp/packet/parameter/ssn_tsn_reset_request_parameter.cc \
+	net/dcsctp/packet/parameter/state_cookie_parameter.cc \
+	net/dcsctp/packet/parameter/supported_extensions_parameter.cc \
 	net/dcsctp/public/dcsctp_handover_state.cc \
 	net/dcsctp/public/dcsctp_socket_factory.cc \
 	net/dcsctp/public/text_pcap_packet_observer.cc \
@@ -129,6 +176,11 @@ TARGET = dcsctp
 STATIC_TARGET = lib$(TARGET).a
 SHARED_TARGET = lib$(TARGET).$(DYEXT)
 
+LD_LIBS = third_party/crc32c/src/build/libcrc32c.a
+ifeq ($(OS),DARWIN)
+LD_LIBS += third_party/abseil-cpp/libs/macosx/libabsl_all.a
+endif
+
 all: static
 
 
@@ -137,7 +189,7 @@ static: $(OBJS)
 	@echo "generate static $(TARGET)"
 
 shared: $(OBJS)
-	@$(CXX) $(LDFLAGS) -o $(SHARED_TARGET) $^
+	@$(CXX) $(LDFLAGS) -o $(SHARED_TARGET) $^ $(LD_LIBS)
 	@echo "generate shared $(TARGET)"
 
 clean:
