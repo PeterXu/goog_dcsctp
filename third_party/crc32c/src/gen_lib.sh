@@ -1,0 +1,4 @@
+mkdir -p build
+cd build
+cmake -DCRC32C_BUILD_TESTS=0 -DCRC32C_BUILD_BENCHMARKS=0 -DCRC32C_USE_GLOG=0 -DCMAKE_BUILD_TYPE=Release ../
+make
