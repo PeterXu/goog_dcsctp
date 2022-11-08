@@ -17,7 +17,7 @@ endif
 
 ifeq ($(OS),DARWIN)
 AR = libtool -static -o
-LDFLAGS += -dynamiclib
+LDFLAGS += -dynamiclib -lobjc -framework Foundation
 CFLAGS += -DWEBRTC_POSIX -DWEBRTC_MAC
 DYEXT = dylib
 endif
