@@ -15,6 +15,8 @@
 
 namespace webrtc {
 
+CONSTEXPR bool DataSize::one_sided = true;
+
 std::string ToString(DataSize value) {
   char buf[64];
   rtc::SimpleStringBuilder sb(buf);

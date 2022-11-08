@@ -47,7 +47,6 @@ class DataSize final : public rtc_units_impl::RelativeUnit<DataSize> {
   using RelativeUnit::RelativeUnit;
   static CONSTEXPR bool one_sided; // = true;
 };
-CONSTEXPR bool DataSize::one_sided = true;
 
 std::string ToString(DataSize value);
 inline std::string ToLogString(DataSize value) {

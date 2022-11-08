@@ -76,7 +76,6 @@ class DataRate final : public rtc_units_impl::RelativeUnit<DataRate> {
   using RelativeUnit::RelativeUnit;
   static CONSTEXPR bool one_sided; // = true;
 };
-CONSTEXPR bool DataRate::one_sided = true;
 
 namespace data_rate_impl {
 inline CONSTEXPR int64_t Microbits(const DataSize& size) {

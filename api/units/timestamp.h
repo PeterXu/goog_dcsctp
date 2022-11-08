@@ -119,7 +119,6 @@ class Timestamp final : public rtc_units_impl::UnitBase<Timestamp> {
   using UnitBase::UnitBase;
   static CONSTEXPR bool one_sided; // = true;
 };
-CONSTEXPR bool Timestamp::one_sided = true;
 
 std::string ToString(Timestamp value);
 inline std::string ToLogString(Timestamp value) {

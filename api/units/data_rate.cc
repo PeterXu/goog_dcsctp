@@ -15,6 +15,8 @@
 
 namespace webrtc {
 
+CONSTEXPR bool DataRate::one_sided = true;
+
 std::string ToString(DataRate value) {
   char buf[64];
   rtc::SimpleStringBuilder sb(buf);

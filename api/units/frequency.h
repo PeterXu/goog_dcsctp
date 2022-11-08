@@ -58,7 +58,6 @@ class Frequency final : public rtc_units_impl::RelativeUnit<Frequency> {
   using RelativeUnit::RelativeUnit;
   static CONSTEXPR bool one_sided; // = true;
 };
-CONSTEXPR bool Frequency::one_sided = true;
 
 inline CONSTEXPR Frequency operator/(int64_t nominator,
                                      const TimeDelta& interval) {

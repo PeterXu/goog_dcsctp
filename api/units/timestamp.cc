@@ -14,6 +14,9 @@
 #include "rtc_base/strings/string_builder.h"
 
 namespace webrtc {
+
+CONSTEXPR bool Timestamp::one_sided = true;
+
 std::string ToString(Timestamp value) {
   char buf[64];
   rtc::SimpleStringBuilder sb(buf);
