@@ -72,8 +72,10 @@ RTC_SRCS2 = \
 
 ifeq ($(OS),macosx)
 RTC_SRCS3 = rtc_base/system/cocoa_threading.mm
-else
-RTC_SRCS3 =
+endif
+
+ifeq ($(OS),android)
+RTC_SRCS3 = rtc_base/ifaddrs_android.cc
 endif
 
 RTC_SRCS = $(RTC_SRCS1) $(RTC_SRCS2) $(RTC_SRCS3)

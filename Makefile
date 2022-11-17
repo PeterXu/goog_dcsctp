@@ -53,7 +53,12 @@ CFLAGS += -DWEBRTC_ARCH_ARM64 -DWEBRTC_HAS_NEON
 endif
 
 
+# >use cmake to build:
+#  cd third_party/crc32c/src/; mkdir build; cd build; cmake ..; make
 LD_LIBS = third_party/crc32c/src/build/libcrc32c.a
+
+# >use gen_lib.sh to build
+#  cd third_party/abseil-cpp/libs/$(OS)/; sh gen_lib.sh
 LD_LIBS += third_party/abseil-cpp/libs/$(OS)/libabsl_all.a
 
 
