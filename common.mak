@@ -70,7 +70,7 @@ RTC_SRCS2 = \
 	rtc_base/synchronization/yield_policy.cc \
 	rtc_base/third_party/sigslot/sigslot.cc
 
-ifeq ($(OS),DARWIN)
+ifeq ($(OS),macosx)
 RTC_SRCS3 = rtc_base/system/cocoa_threading.mm
 else
 RTC_SRCS3 =
@@ -176,10 +176,6 @@ TARGET = dcsctp
 STATIC_TARGET = lib$(TARGET).a
 SHARED_TARGET = lib$(TARGET).$(DYEXT)
 
-LD_LIBS = third_party/crc32c/src/build/libcrc32c.a
-ifeq ($(OS),DARWIN)
-LD_LIBS += third_party/abseil-cpp/libs/macosx/libabsl_all.a
-endif
 
 all: static
 
